@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+ <html>
+ <head>
+  <title>Localizador de Moradas Exclusivo</title>
+  <style>
+  body {
+  font-family: sans-serif;
+  background-color: #f0f8ff; /* AliceBlue */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  }
+
+  #morada-finder {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  }
+
+  h1 {
+  color: #4682B4; /* SteelBlue */
+  margin-bottom: 20px;
+  }
+
+  input[type="text"] {
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #B0C4DE; /* LightSteelBlue */
+  border-radius: 5px;
+  width: 280px;
+  box-sizing: border-box;
+  font-size: 16px;
+  }
+
+  button {
+  background-color: #4682B4; /* SteelBlue */
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+  background-color: #2E64FE; /* RoyalBlue */
+  }
+
+  .resultado {
+  margin-top: 20px;
+  text-align: left;
+  }
+
+  .resultado p {
+  margin: 8px 0;
+  color: #555;
+  font-size: 16px;
+  }
+
+  .erro {
+  color: #FF4500; /* OrangeRed */
+  margin-top: 10px;
+  font-size: 16px;
+  }
+  </style>
+ </head>
+ <body>
+  <div id="morada-finder">
+  <h1>Localizador VIP de Moradas</h1>
+  <input type="text" id="codigo-postal" placeholder="Insira o Código Postal VIP">
+  <button onclick="desvendarMorada()">Desvendar Morada</button>
+  <div id="detalhes-morada" class="resultado" style="display: none;">
+  <h2>Detalhes Confidenciais:</h2>
+  <p><strong>Rua Exclusiva:</strong> <span id="rua-exclusiva"></span></p>
+  <p><strong>Informação Adicional:</strong> <span id="info-extra"></span></p>
+  <p><strong>Bairro Reservado:</strong> <span id="bairro-reservado"></span></p>
+  <p><strong>Cidade Secreta:</strong> <span id="cidade-oculta"></span></p>
+  <p><strong>Estado Ultrassecreto:</strong> <span id="estado-sigiloso"></span></p>
+  </div>
+  <p id="mensagem-erro" class="erro" style="display: none;"></p>
+  </div>
+
+  <script>
+  function desvendarMorada() {
+  const codigoPostal = document.getElementById("codigo-postal").value.trim();
+  const detalhesMoradaDiv = document.getElementById("detalhes-morada");
+  const mensagemErroParagrafo = document.getElementById("mensagem-erro");
+
+  if (!codigoPostal || isNaN(codigoPostal)) {
+  mensagemErroParagrafo.textContent = "Código Postal VIP inválido detectado. Acesso negado.";
+  mensagemErroParagrafo.style.display = "block";
+  detalhesMoradaDiv.style.display = "none";
+  return;
+  }
+
+  mensagemErroParagrafo.style.display = "none";
+  detalhesMoradaDiv.style.display = "none";
+
+  const requisitarMorada = (cep) => {
+  return new Promise((resolve, reject) => {
+  const xhttp = new XMLHttpRequest();
+  xhttp.onload = function() {
+  if (this.status >= 200 && this.status < 300) {
+  resolve(this.responseText);
+  } else {
+  reject(`Falha na comunicação secreta: Status ${this.status}`);
+  }
+  };
+  xhttp.onerror = function() {
+  reject("Erro de rede ao tentar aceder aos arquivos secretos.");
+  };
+  xhttp.open("GET", `https://viacep.com.br/ws/${cep}/json`, true);
+  xhttp.send();
+  });
+  };
+
+  requisitarMorada(codigoPostal)
+  .then(informacoes => {
+  console.log('Informações confidenciais recebidas:', informacoes);
+  const dados = JSON.parse(informacoes);
+  if (dados.erro) {
+  mensagemErroParagrafo.textContent = "Código Postal VIP não encontrado nos nossos arquivos secretos.";
+  mensagemErroParagrafo.style.display = "block";
+  detalhesMoradaDiv.style.display = "none";
+  return;
+  }
+
+  document.getElementById("rua-exclusiva").textContent = dados.logradouro || 'Informação não disponível';
+  document.getElementById("info-extra").textContent = dados.complemento || 'Nenhuma informação adicional';
+  document.getElementById("bairro-reservado").textContent = dados.bairro || 'Área não identificada';
+  document.getElementById("cidade-oculta").textContent = dados.localidade || 'Localização desconhecida';
+  document.getElementById("estado-sigiloso").textContent = dados.uf || 'Estado confidencial';
+  detalhesMoradaDiv.style.display = "block";
+  })
+  .catch(falha => {
+  console.error("Erro crítico na operação secreta:", falha);
+  mensagemErroParagrafo.textContent = "Não foi possível aceder aos dados confidenciais. Tente novamente mais tarde.";
+  mensagemErroParagrafo.style.display = "block";
+  });
+  }
+  </script>
+ </body>
+ </html>

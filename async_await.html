@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Localizador de Endereços da Elite</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0f2f7; /* Light Cyan 50 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #localizador-elite {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+        h1 {
+            color: #00838f; /* Teal 700 */
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        input[type="text"] {
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #b2ebf2; /* Cyan 100 */
+            border-radius: 8px;
+            width: 300px;
+            box-sizing: border-box;
+            font-size: 1.1em;
+        }
+        button {
+            background-color: #00838f; /* Teal 700 */
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #00695c; /* Teal 800 */
+        }
+        .resultado-exclusivo {
+            margin-top: 30px;
+            text-align: left;
+            padding: 20px;
+            border: 1px solid #80deea; /* Cyan 200 */
+            border-radius: 8px;
+            background-color: #e0f7fa; /* Light Cyan 100 */
+        }
+        .resultado-exclusivo h2 {
+            color: #006064; /* Teal 900 */
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        .resultado-exclusivo p {
+            margin: 10px 0;
+            color: #37474f; /* Blue Grey 800 */
+            font-size: 1.1em;
+        }
+        .erro-vip {
+            color: #d32f2f; /* Red 700 */
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="localizador-elite">
+        <h1>Localizador de Endereços da Elite</h1>
+        <input type="text" id="codigo-nobre" placeholder="Insira seu Código Nobre">
+        <button onclick="rastrearLocalizacao()">Rastrear Localização</button>
+        <div id="detalhes-nobre" class="resultado-exclusivo" style="display: none;">
+            <h2>Detalhes da Área Privilegiada:</h2>
+            <p><strong>Logradouro Distinto:</strong> <span id="rua-distinta"></span></p>
+            <p><strong>Complemento Exclusivo:</strong> <span id="complemento-exclusivo"></span></p>
+            <p><strong>Bairro Seleto:</strong> <span id="bairro-seleto"></span></p>
+            <p><strong>Cidade de Prestígio:</strong> <span id="cidade-prestigio"></span></p>
+            <p><strong>Estado de Elite:</strong> <span id="estado-elite"></span></p>
+        </div>
+        <p id="mensagem-falha" class="erro-vip" style="display: none;"></p>
+    </div>
+
+    <script>
+        async function rastrearLocalizacao() {
+            const codigoNobre = document.getElementById("codigo-nobre").value.trim();
+            const detalhesNobreDiv = document.getElementById("detalhes-nobre");
+            const mensagemFalhaParagrafo = document.getElementById("mensagem-falha");
+
+            if (!codigoNobre || isNaN(codigoNobre)) {
+                mensagemFalhaParagrafo.textContent = "Código Nobre inválido. Acesso restrito.";
+                mensagemFalhaParagrafo.style.display = "block";
+                detalhesNobreDiv.style.display = "none";
+                return;
+            }
+
+            mensagemFalhaParagrafo.style.display = "none";
+            detalhesNobreDiv.style.display = "none";
+
+            try {
+                const resposta = await fetch(`https://viacep.com.br/ws/${codigoNobre}/json`);
+
+                if (!resposta.ok) {
+                    throw new Error(`Falha na comunicação com os servidores da elite: Status ${resposta.status}`);
+                }
+
+                const dadosNobre = await resposta.json();
+                console.log('Dados da área privilegiada recebidos:', dadosNobre);
+
+                if (dadosNobre.erro) {
+                    mensagemFalhaParagrafo.textContent = "Código Nobre não encontrado nos registros da elite.";
+                    mensagemFalhaParagrafo.style.display = "block";
+                    detalhesNobreDiv.style.display = "none";
+                    return;
+                }
+
+                document.getElementById("rua-distinta").textContent = dadosNobre.logradouro || 'Informação confidencial';
+                document.getElementById("complemento-exclusivo").textContent = dadosNobre.complemento || 'Detalhe não divulgado';
+                document.getElementById("bairro-seleto").textContent = dadosNobre.bairro || 'Área de acesso exclusivo';
+                document.getElementById("cidade-prestigio").textContent = dadosNobre.localidade || 'Localização reservada';
+                document.getElementById("estado-elite").textContent = dadosNobre.uf || 'Estado de alta classe';
+                detalhesNobreDiv.style.display = "block";
+
+            } catch (erro) {
+                console.error("Erro ao acessar informações privilegiadas:", erro);
+                mensagemFalhaParagrafo.textContent = `Não foi possível obter os detalhes da localização. Erro: ${erro.message}`;
+                mensagemFalhaParagrafo.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>

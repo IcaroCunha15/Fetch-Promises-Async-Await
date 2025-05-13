@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buscador de Endereços VIP</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #endereco-finder {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 250px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        .resultado {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .resultado p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .erro {
+            color: #d9534f;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="endereco-finder">
+        <h1>Localizador de Endereços Secreto</h1>
+        <input type="text" id="codigo-postal" placeholder="Insira o Código VIP">
+        <button onclick="rastrearEndereco()">Desvendar Localização</button>
+        <div id="detalhes-endereco" class="resultado" style="display: none;">
+            <h2>Detalhes Confidenciais:</h2>
+            <p><strong>Logradouro Encontrado:</strong> <span id="rua-exclusiva"></span></p>
+            <p><strong>Informação Adicional:</strong> <span id="info-extra"></span></p>
+            <p><strong>Bairro Privativo:</strong> <span id="bairro-reservado"></span></p>
+            <p><strong>Cidade Secreta:</strong> <span id="cidade-oculta"></span></p>
+            <p><strong>Estado Ultrassecreto:</strong> <span id="estado-sigiloso"></span></p>
+        </div>
+        <p id="mensagem-erro" class="erro" style="display: none;"></p>
+    </div>
+
+    <script>
+        function rastrearEndereco() {
+            const codigoPostal = document.getElementById("codigo-postal").value.trim();
+            const detalhesEnderecoDiv = document.getElementById("detalhes-endereco");
+            const mensagemErroParagrafo = document.getElementById("mensagem-erro");
+
+            if (!codigoPostal || isNaN(codigoPostal)) {
+                mensagemErroParagrafo.textContent = "Código VIP inválido detectado. Acesso negado.";
+                mensagemErroParagrafo.style.display = "block";
+                detalhesEnderecoDiv.style.display = "none";
+                return;
+            }
+
+            mensagemErroParagrafo.style.display = "none"; // Esconde mensagens de erro anteriores
+            detalhesEnderecoDiv.style.display = "none"; // Esconde resultados anteriores
+
+            fetch(`https://viacep.com.br/ws/${codigoPostal}/json`)
+                .then(resposta => {
+                    if (!resposta.ok) {
+                        throw new Error(`Falha na comunicação secreta: Status ${resposta.status}`);
+                    }
+                    return resposta.json();
+                })
+                .then(informacoes => {
+                    console.log('Informações confidenciais recebidas:', informacoes);
+                    if (informacoes.erro) {
+                        mensagemErroParagrafo.textContent = "Código VIP não encontrado em nossos arquivos secretos.";
+                        mensagemErroParagrafo.style.display = "block";
+                        detalhesEnderecoDiv.style.display = "none";
+                        return;
+                    }
+
+                    document.getElementById("rua-exclusiva").textContent = informacoes.logradouro || 'Informação não disponível';
+                    document.getElementById("info-extra").textContent = informacoes.complemento || 'Nenhuma informação adicional';
+                    document.getElementById("bairro-reservado").textContent = informacoes.bairro || 'Área não identificada';
+                    document.getElementById("cidade-oculta").textContent = informacoes.localidade || 'Localização desconhecida';
+                    document.getElementById("estado-sigiloso").textContent = informacoes.uf || 'Estado confidencial';
+                    detalhesEnderecoDiv.style.display = "block";
+                })
+                .catch(falha => {
+                    console.error("Erro crítico na operação secreta:", falha);
+                    mensagemErroParagrafo.textContent = "Não foi possível acessar os dados confidenciais. Tente novamente mais tarde.";
+                    mensagemErroParagrafo.style.display = "block";
+                });
+        }
+    </script>
+
+</body>
+</html>
